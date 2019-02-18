@@ -1,0 +1,53 @@
+- hosts: nodes
+  tasks:
+  - name: Verifica hostnames (hostnames precisam ter fqdn exatamente iguais)
+    shell: "hostname"
+
+  - name: Verifica Velocidade (Velocidades precisam ficar acima de 150Mbps)
+    shell: "dd if=/dev/zero of=/tmp/zeros count=200000"
+
+  - name: Verifica se discos para docker estao presentes
+    shell: "lsblk"
+
+  - name: Verifica se nodes resolvem entrada da api
+    shell: "host {{ openshift_public_hostname }}"
+
+  - name: Verifica velocidade da internet
+    shell: "docker pull rhel7"
+
+  - name: Remove imagem criada
+    shell: "docker rmi rhel7"
+
+  - name: Verifica IPV6
+    shell: "hostname --ip-address"
+
+  - name: Verifica se ha mais de um nome resolvendo
+    shell: "host {{ inventory_hostname }} | wc -l"
+
+  - name: Verifica se selinux esta habilitado com enforcing e targeted
+    shell: "sestatus"
+
+########################
+# Testes de NFS
+########################
+
+  - name: Cria diretorio temporario
+    shell: "mkdir /tmp/nfs"
+
+  - name: Monta diretorio:
+    shell: "mount {{ servidor_nfs }}:/exports/teste /tmp/nfs"
+
+  - name: Salva Arquivo
+    shell: "touch /tmp/nfs/{{ inventory_hostname }}"
+
+  - name: Desmonta FS
+    shell: "umount /tmp/nfs"  
+
+########################
+# Testes de Pacotes
+########################
+
+  - name: Diferencias de Pacotes
+    shell: "rpm -qa | wc -l"
+
+  

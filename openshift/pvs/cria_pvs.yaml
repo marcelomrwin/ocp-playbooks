@@ -1,0 +1,16 @@
+- hosts: localhost
+  vars:
+   quantidade_pvs: 30
+  tasks:
+  - name: Cria diretorios
+    file:
+     path: "/exports/pvs/{{ item }}"
+     state: directory
+     mode: 0777
+    with_sequence: start=1 end={{ quantidade_pvs }} stride=1 format=pv%02x
+
+  - name: Cria arquivos de criacao de Pvs
+    template:
+     src: template_nfs.j2
+     dest: "pvcreation_files/{{ item }}.yaml"
+    with_sequence: start=1 end={{ quantidade_pvs }} stride=1 format=pv%02x
