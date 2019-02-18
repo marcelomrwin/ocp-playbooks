@@ -1,0 +1,14 @@
+- hosts: nodes
+  tasks:
+  - name: Habilita selinux
+    selinux:
+     state: enforcing
+     policy: targeted
+
+  - name: Cria autorelabel
+    file: 
+     path: /.autorelabel
+     state: touch
+
+  - name: Reboot
+    shell: reboot

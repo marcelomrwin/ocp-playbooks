@@ -1,0 +1,26 @@
+- hosts: nodes
+  tasks:
+  - name: Instala pacotes essenciais
+    yum:
+     name: "{{ item }}"
+     state: latest
+    with_items:
+     - wget 
+     - git 
+     - net-tools 
+     - bind-utils 
+     - yum-utils 
+     - iptables-services 
+     - bridge-utils 
+     - bash-completion 
+     - kexec-tools 
+     - sos 
+     - psacct
+
+  - name: Atualiza todos os pacotes
+    yum:
+     name: "*"
+     state: latest
+
+  - name: Reboot
+    shell: reboot 

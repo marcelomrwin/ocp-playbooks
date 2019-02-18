@@ -1,0 +1,25 @@
+- hosts: masters,ocp-infra-1.centrus.org.br,ocp-infra-2.centrus.org.br
+  no_log: true
+  vars_prompt:
+   - name: "password"
+     prompt: "Senha"
+     private: yes
+  tasks:
+  - name: Limpa subscricao
+    shell: "subscription-manager unregister"
+    ignore_errors: yes
+
+  - name: Subscreve
+    shell: "subscription-manager register  --username=ryan@centrus.org.br --password={{ password }}"
+
+  - name: Refresh
+    shell: "subscription-manager refresh"
+    
+  - name: Anexa pool
+    shell:  subscription-manager attach --pool=8a85f99a68af89ba0168b9246e247266
+
+  - name: Desabilita repos
+    shell: subscription-manager repos --disable="*"
+
+  - name: Habilita repos
+    shell: subscription-manager repos --enable="rhel-7-server-rpms" --enable="rhel-7-server-extras-rpms" --enable="rhel-7-server-ose-3.11-rpms" --enable="rhel-7-server-ansible-2.6-rpms"

@@ -1,0 +1,31 @@
+- hosts: nodes
+  tasks:
+  - name: Instala docker
+    yum:
+     name: docker-1.13.1
+     state: installed
+
+  - name: Configura docker-storage-setup
+    copy: 
+     src: docker-storage-setup
+     dest: /etc/sysconfig/docker-storage-setup
+
+  - name: Copia arquivo de configuracao docker 
+    copy:
+     src: docker
+     dest: /etc/sysconfig/docker
+
+
+  - name: Roda docker-storage-setup
+    shell: docker-storage-setup
+
+  - name: Instala docker-novolume-plugin
+    yum:
+     name: docker-novolume-plugin
+     state: latest
+
+  - name: Inicia e Habilita Docker
+    service:
+     name: docker
+     enabled: yes
+     state: started

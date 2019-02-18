@@ -1,0 +1,34 @@
+- hosts: nodes
+  tasks:
+  - name: Desinstala Docker
+    yum:
+     name: docker
+     state: removed
+
+  - name: Remover docker-novolume-plugin
+    yum:
+     name: docker-novolume-plugin
+     state: removed
+
+  - name: Remove conteudo
+    shell: "rm -rf /var/lib/docker/*"
+
+  - name: Remove arquivos de conf antigos
+    shell: "rm -f /etc/sysconfig/docker*"
+  
+  - name: Remove vg
+    shell: "vgremove -y docker-vg"
+
+  - name: Remove pv
+    shell: "pvremove -y /dev/sdb1"
+
+  - name: Remove Particao
+    parted:
+      device: /dev/sdb
+      number: 1
+      state: absent
+
+  - name: Wipefs no disco
+    shell: "wipefs -f -a /dev/sdb"
+
+
