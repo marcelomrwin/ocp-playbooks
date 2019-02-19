@@ -1,6 +1,10 @@
 - hosts: localhost
   vars:
-   quantidade_pvs: 30
+   quantidade_pvs: 10
+  vars_prompt:
+   - name: "servidor_nfs"
+     prompt: "Servidor NFS"
+     private: no
   tasks:
   - name: Cria diretorios
     file:

@@ -11,5 +11,5 @@ spec:
   - ReadOnlyMany 
   nfs: 
     path: /exports/pvs/{{ item }}
-    server: ocp-bastion.centrus.org.br
+    server: {{ servidor_nfs }}
   persistentVolumeReclaimPolicy: Retain

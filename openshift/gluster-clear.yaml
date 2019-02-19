@@ -1,0 +1,12 @@
+- hosts: glusterfs
+  tasks:
+  - name: Wipefs no disco
+    shell: "wipefs -f -a /dev/sdd"
+
+- hosts: glusterfs_registry
+  tasks:
+  - name: Wipefs no disco
+    shell: "wipefs -f -a /dev/sdc"
+
+
+

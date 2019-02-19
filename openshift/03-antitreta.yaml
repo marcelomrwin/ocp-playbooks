@@ -1,0 +1,93 @@
+- hosts: nodes
+  vars_prompt:
+   - name: "servidor_nfs"
+     prompt: "Digite o servidor nfs"
+     private: no
+  tasks:
+  - name: Verifica hostnames (hostnames precisam ter fqdn exatamente iguais)
+    shell: "hostname"
+    register: teste1
+  - debug: var=teste1.stdout_lines
+
+  - name: Verifica Velocidade (Velocidades precisam ficar acima de 150Mbps)
+    shell: "dd if=/dev/zero of=/tmp/zeros count=200000"
+    register: teste2
+  - debug: var=teste2.stderr_lines
+
+
+  - name: Verifica se discos para docker e/ou gluster estao presentes
+    shell: "lsblk | grep disk"
+    register: teste3
+  - debug: var=teste3.stdout_lines
+
+
+  - name: Verifica se nodes resolvem entrada da api
+    shell: "host {{ openshift_master_cluster_public_hostname }}"
+    register: teste4
+  - debug: var=teste4.stdout_lines
+
+  - name: Verifica velocidade da internet (30Mbs... tempo esperado ate 45s)
+    shell: "time docker pull registry.access.redhat.com/rhel7/rhel-atomic"
+    register: teste5
+  - debug: var=teste5.stdout_lines
+
+  - name: Remove imagem criada
+    shell: "docker rmi registry.access.redhat.com/rhel7/rhel-atomic"
+    register: teste6
+  - debug: var=teste6.stdout_lines
+
+
+  - name: Verifica IPV6
+    shell: "hostname --ip-address"
+    register: teste7
+  - debug: var=teste7.stdout_lines
+
+
+  - name: Verifica se ha mais de um nome resolvendo
+    shell: "host {{ inventory_hostname }} | wc -l"
+    register: teste8
+  - debug: var=teste8.stdout_lines
+
+
+
+  - name: Verifica se selinux esta habilitado com enforcing e targeted
+    shell: "sestatus"
+    register: teste9
+  - debug: var=teste9.stdout_lines
+
+
+########################
+# Testes de NFS
+########################
+
+  - name: Cria diretorio temporario
+    file: 
+     state: directory
+     path: "/tmp/nfs"
+     mode: 0755
+
+  - name: Monta diretorio
+    shell: "mount {{ servidor_nfs }}:/exports/teste /tmp/nfs"
+
+  - name: Salva Arquivo
+    shell: "touch /tmp/nfs/{{ inventory_hostname }}"
+
+  - name: Desmonta FS
+    shell: "umount /tmp/nfs"  
+
+########################
+# Testes de Pacotes
+########################
+
+  - name: Diferencas de Pacotes
+    shell: "rpm -qa | wc -l"
+    register: teste10
+  - debug: var=teste10.stdout_lines
+
+  
+- hosts: nfs 
+  tasks:
+  - name: Listando arquivos no nfs
+    shell: "ls -la /exports/teste"
+    register: testenfs
+  - debug: var=testenfs.stdout_lines

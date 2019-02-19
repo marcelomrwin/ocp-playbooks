@@ -1,22 +1,31 @@
-- hosts: masters,ocp-infra-1.centrus.org.br,ocp-infra-2.centrus.org.br
+- hosts: nodes
   no_log: true
   vars_prompt:
+   - name: "user"
+     prompt: "Usuario RHN"
+     private: no
+
    - name: "password"
      prompt: "Senha"
      private: yes
+
+   - name: "poolid"
+     prompt: "Pool ID"
+     private: no
+
   tasks:
   - name: Limpa subscricao
     shell: "subscription-manager unregister"
     ignore_errors: yes
 
   - name: Subscreve
-    shell: "subscription-manager register  --username=ryan@centrus.org.br --password={{ password }}"
+    shell: "subscription-manager register  --username={{ user }} --password={{ password }}"
 
   - name: Refresh
     shell: "subscription-manager refresh"
     
   - name: Anexa pool
-    shell:  subscription-manager attach --pool=8a85f99a68af89ba0168b9246e247266
+    shell: "subscription-manager attach --pool={{ poolid }}"
 
   - name: Desabilita repos
     shell: subscription-manager repos --disable="*"

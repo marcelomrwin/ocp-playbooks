@@ -1,0 +1,193 @@
+# Create an OSEv3 group that contains the masters, nodes, and etcd groups
+[OSEv3:children]
+masters
+nodes
+etcd
+lb
+nfs
+#glusterfs
+#glusterfs_registry
+
+# Set variables common for all OSEv3 hosts
+[OSEv3:vars]
+# ============================================
+# Variaveis Gerais
+# ============================================
+openshift_deployment_type=openshift-enterprise
+openshift_clock_enabled=true
+ansible_ssh_user=root
+
+# ============================================
+# Configurações do Master
+# ============================================
+openshift_master_cluster_method=native
+openshift_master_cluster_hostname=openshift.cliente.com.br
+openshift_master_cluster_public_hostname=openshift.cliente.com.br
+openshift_master_default_subdomain=apps.cliente.com.br
+openshift_master_api_port=443
+openshift_master_console_port=443
+openshift_master_htpasswd_users={'admin': '$apr1$xySBCH36$Lzw6m81rKP/hIqJYbXUht0', 'developer': '$apr1$xySBCH36$Lzw6m81rKP/hIqJYbXUht0'}
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
+
+# ===========================================
+# Networking
+# ===========================================
+os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
+# ---------> As duas linhas abaixo devem ser alteradas em caso de coincidencia das redes no cliente. Sugere-se manter as mascaras. Atentar para rede Docker tambem. 172.17.0.0
+osm_cluster_network_cidr=10.128.0.0/14
+openshift_portal_net=172.30.0.0/16
+
+# ============================================
+# Configurações do Docker
+# ============================================
+# ----------> Mudar a linha abaixo caso mude a rede de servico 172.30.0.0/16
+openshift_docker_options="--insecure-registry=172.30.0.0/16 --selinux-enabled --log-driver json-file --log-opt max-size=1M --log-opt max-file=3"
+
+# ============================================
+# Configurações da subscrição
+# ============================================
+
+# ===========================================
+# Metrics Server
+# ===========================================
+openshift_metrics_server_install=true
+
+# ============================================
+# Prometheus Operator
+# ============================================
+openshift_cluster_monitoring_operator_install=true
+
+# ===========================================
+# Registry
+# ===========================================
+openshift_hosted_registry_storage_kind=nfs
+openshift_hosted_registry_storage_access_modes=['ReadWriteMany']
+openshift_hosted_registry_storage_nfs_directory=/exports
+openshift_hosted_registry_storage_nfs_options='*(rw,root_squash)'
+openshift_hosted_registry_storage_volume_name=registry
+openshift_hosted_registry_storage_volume_size=10Gi
+
+# ------> Descomentar caso seja usado gluster
+#openshift_hosted_registry_selector='node-role.kubernetes.io/infra=true'
+#openshift_hosted_registry_storage_kind=glusterfs 
+#openshift_hosted_registry_storage_volume_size=80Gi
+#openshift_hosted_registry_selector='node-role.kubernetes.io/infra=true'
+#openshift_storage_glusterfs_registry_wipe=true
+
+# ===========================================
+# Logging
+# ===========================================
+openshift_logging_install_logging=true
+openshift_logging_es_nodeselector={"node-role.kubernetes.io/infra":"true"}
+
+# Caso NFS...
+openshift_logging_storage_kind=nfs
+openshift_logging_storage_access_modes=['ReadWriteOnce']
+openshift_logging_storage_nfs_directory=/exports
+openshift_logging_storage_nfs_options='*(rw,root_squash)'
+openshift_logging_storage_volume_name=logging
+openshift_logging_storage_volume_size=10Gi
+
+# --------> Descomentar em caso de gluster
+#openshift_logging_es_nodeselector={"node-role.kubernetes.io/infra":"true"}
+#openshift_logging_install_logging=true
+#openshift_logging_es_pvc_dynamic=true
+
+
+# ===========================================
+# Gluster
+# ===========================================
+#openshift_storage_glusterfs_namespace=app-storage
+#openshift_storage_glusterfs_storageclass=true
+#openshift_storage_glusterfs_storageclass_default=false
+#openshift_storage_glusterfs_block_deploy=true
+#openshift_storage_glusterfs_block_host_vol_size=100
+#openshift_storage_glusterfs_block_storageclass=true
+#openshift_storage_glusterfs_block_storageclass_default=false
+#openshift_storage_glusterfs_wipe=true
+
+# ===========================================
+# Service Catalog
+# ===========================================
+openshift_enable_service_catalog=true
+ansible_service_broker_install=true
+template_service_broker_install=true
+template_service_broker_selector={"node-role.kubernetes.io/infra":"true"}
+openshift_template_service_broker_namespaces=['openshift']
+ansible_service_broker_local_registry_whitelist=['.*-apb$']
+
+# ===========================================
+# NFS
+# ===========================================
+openshift_enable_unsupported_configurations=true
+
+# ===========================================
+# Cloudforms
+# ===========================================
+#openshift_cfme_install_app=true
+#openshift_management_install_beta=true
+#openshift_node_groups=[{'name': 'node-config-master', 'labels': ['node-role.kubernetes.io/master=true']}, {'name': 'node-config-infra', 'labels':['node-role.kubernetes.io/infra=true',]}, {'name': 'node-config-compute', 'labels': ['node-role.kubernetes.io/compute=true'], 'edits': [{ 'key': 'kubeletArguments.pods-per-core','value': ['20']}]}]
+
+# ===========================================
+# 3.11 new stuff
+# ===========================================
+oreg_url = "registry.access.redhat.com/openshift3/ose-${component}:${version}"
+openshift_examples_modify_imagestreams=true
+openshift_install_examples=true
+
+# ===========================================
+# Proxy
+# ===========================================
+#openshift_http_proxy=proxy.cliente.com.br:8080
+#openshift_https_proxy=proxy.cliente.com.br:8080
+#openshift_generate_no_proxy_hosts=true
+#openshift_no_proxy=<entrada master e nodes com fqdn ou sufixo Ex: .cliente.com.br>,<outros dominios Ex: .cliente.com>,<ip dos etcds separados por virgula Ex: 192.168.2.1,192.168.2.2,192,168.2.3>,<Kubernetes IP address, por padrao 172.30.0.1. Deve ser o valor obtido no parametro openshift_portal_net>,.cluster.local,.svc
+
+#openshift_builddefaults_http_proxy=proxy.cliente.com.br:8080
+#openshift_builddefaults_https_proxy=proxy.cliente.com.br:8000
+#openshift_builddefaults_no_proxy=<entrada master e nodes com fqdn ou sufixo Ex: .cliente.com.br>,<outros dominios Ex: .cliente.com>,<ip dos etcds separados por virgula Ex: 192.168.2.1,192.168.2.2,192,168.2.3>,<Kubernetes IP address, por padrao 172.30.0.1. Deve ser o valor obtido no parametro openshift_portal_net>,.cluster.local,.svc
+
+
+#openshift_builddefaults_git_http_proxy=proxy.cliente.com.br:8080
+#openshift_builddefaults_git_https_proxy=proxy.cliente.com.br:8080
+#openshift_builddefaults_git_no_proxy=<entrada master e nodes com fqdn ou sufixo Ex: .cliente.com.br>,<outros dominios Ex: .cliente.com>,<ip dos etcds separados por virgula Ex: 192.168.2.1,192.168.2.2,192,168.2.3>,<Kubernetes IP address, por padrao 172.30.0.1. Deve ser o valor obtido no parametro openshift_portal_net>,.cluster.local,.svc
+
+
+# host group for masters
+[masters]
+ocp-master-1.cliente.com.br
+ocp-master-2.cliente.com.br
+ocp-master-3.cliente.com.br
+
+# host group for etcd
+[etcd]
+ocp-master-1.cliente.com.br
+ocp-master-2.cliente.com.br
+ocp-master-3.cliente.com.br
+
+# host group for nodes, includes region info
+[nodes]
+ocp-master-1.cliente.com.br openshift_node_group_name='node-config-master'
+ocp-master-2.cliente.com.br openshift_node_group_name='node-config-master'
+ocp-master-3.cliente.com.br openshift_node_group_name='node-config-master'
+ocp-infra-1.cliente.com.br openshift_node_group_name='node-config-infra'
+ocp-infra-2.cliente.com.br openshift_node_group_name='node-config-infra'
+ocp-node-1.cliente.com.br openshift_node_group_name='node-config-compute'
+ocp-node-2.cliente.com.br openshift_node_group_name='node-config-compute'
+ocp-node-3.cliente.com.br openshift_node_group_name='node-config-compute'
+
+[lb]
+ocp-bastion.cliente.com.br
+
+[nfs]
+ocp-bastion.cliente.com.br
+
+#[glusterfs_registry]
+#ocp-node-1.cliente.com.br glusterfs_devices='[ "/dev/sdc" ]'
+#ocp-node-2.cliente.com.br glusterfs_devices='[ "/dev/sdc" ]'
+#ocp-node-3.cliente.com.br glusterfs_devices='[ "/dev/sdc" ]'
+
+#[glusterfs]
+#ocp-node-1.cliente.com.br glusterfs_devices='[ "/dev/sdd" ]'
+#ocp-node-2.cliente.com.br glusterfs_devices='[ "/dev/sdd" ]'
+#ocp-node-3.cliente.com.br glusterfs_devices='[ "/dev/sdd" ]'
