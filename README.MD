@@ -4,6 +4,5 @@
 - Verificam pre-requisitos básicos de SO, rede, storage, DNS, internet, etc.
 - Os playbooks \*clear servem para limpar o ambiente após uma instalação mal-sucedida
 
-** Rodar os playbooks na ordem definida
-
-** Após limpeza do docker rodar o 04-docker.yaml
+* Rodar os playbooks na ordem definida
+* Após limpeza do docker rodar o *04-docker.yaml*
