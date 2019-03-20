@@ -3,11 +3,30 @@
    - name: "servidor_nfs"
      prompt: "Digite o servidor nfs"
      private: no
+
   tasks:
+  - name: Desabilita Puppet
+    service:
+     name: puppet-agent
+     state: stopped
+     enabled: false
+    ignore_errors: yes
+
+  - name: Desinstala puppet
+    yum:
+     name: puppet-agent
+     state: removed
+
   - name: Verifica hostnames (hostnames precisam ter fqdn exatamente iguais)
     shell: "hostname"
     register: teste1
   - debug: var=teste1.stdout_lines
+
+  - name: Verifica Entrada Asterisco
+    shell: "host aslkasjfsos.{{ openshift_master_default_subdomain }}"
+    register: asterisco
+  - debug: var=asterisco.stdout_lines
+
 
   - name: Verifica Velocidade (Velocidades precisam ficar acima de 150Mbps)
     shell: "dd if=/dev/zero of=/tmp/zeros count=200000"
@@ -67,7 +86,7 @@
      mode: 0755
 
   - name: Monta diretorio
-    shell: "mount {{ servidor_nfs }}:/exports/teste /tmp/nfs"
+    shell: "mount {{ servidor_nfs }}:/exports /tmp/nfs"
 
   - name: Salva Arquivo
     shell: "touch /tmp/nfs/{{ inventory_hostname }}"
@@ -88,6 +107,6 @@
 - hosts: nfs 
   tasks:
   - name: Listando arquivos no nfs
-    shell: "ls -la /exports/teste"
+    shell: "ls -la /exports"
     register: testenfs
   - debug: var=testenfs.stdout_lines
