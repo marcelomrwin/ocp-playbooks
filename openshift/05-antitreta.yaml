@@ -7,14 +7,19 @@
   tasks:
   - name: Desabilita Puppet
     service:
-     name: puppet-agent
+     name: puppet
      state: stopped
      enabled: false
     ignore_errors: yes
 
-  - name: Desinstala puppet
+  - name: Desinstala puppet-agent
     yum:
      name: puppet-agent
+     state: removed
+
+  - name: Desinstala puppet
+    yum:
+     name: puppet
      state: removed
 
   - name: Verifica hostnames (hostnames precisam ter fqdn exatamente iguais)
