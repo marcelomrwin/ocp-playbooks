@@ -5,11 +5,14 @@
     selinux:
      state: enforcing
      policy: targeted
+    register: result
 
   - name: Cria autorelabel
     file: 
      path: /.autorelabel
      state: touch
+    when: result.changed == true
 
   - name: Reboot
     shell: reboot
+    when: result.changed == true
