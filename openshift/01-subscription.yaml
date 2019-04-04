@@ -1,5 +1,6 @@
 - hosts: nodes
   no_log: true
+  become: yes
   vars_prompt:
    - name: "user"
      prompt: "Usuario RHN"
@@ -29,6 +30,9 @@
 
   - name: Desabilita repos
     shell: subscription-manager repos --disable="*"
+
+  - name: Certifica yum repolist vazio
+    shell:  yum-config-manager --disable \*
 
   - name: Habilita repos
     shell: subscription-manager repos --enable="rhel-7-server-rpms" --enable="rhel-7-server-extras-rpms" --enable="rhel-7-server-ose-3.11-rpms" --enable="rhel-7-server-ansible-2.6-rpms"

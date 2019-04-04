@@ -1,4 +1,5 @@
 - hosts: nodes
+  become: yes
   tasks:
   - name: Instala pacotes essenciais
     yum:
