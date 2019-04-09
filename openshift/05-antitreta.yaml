@@ -83,7 +83,15 @@
 ########################
 # Testes de NFS
 ########################
+  - name: Instala NFS Utils
+    yum:
+     name: nfs-utils
+     state: latest
 
+  - name: Instala rpcbind
+    yum:
+     name: rpcbind
+     state: latest
   - name: Cria diretorio temporario
     file: 
      state: directory
