@@ -1,0 +1,5 @@
+---
+#- import_playbook: 01-subscription.yaml
+- import_playbook: 02-packages.yaml
+#- import_playbook: 03-selinux.yaml
+#- import_playbook: 04-docker.yaml
