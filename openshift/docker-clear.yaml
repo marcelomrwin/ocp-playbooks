@@ -20,15 +20,15 @@
     shell: "vgremove -y docker-vg"
 
   - name: Remove pv
-    shell: "pvremove -y /dev/sdb1"
+    shell: "pvremove -y /dev/sdc1"
 
   - name: Remove Particao
     parted:
-      device: /dev/sdb
+      device: /dev/sdc
       number: 1
       state: absent
 
   - name: Wipefs no disco
-    shell: "wipefs -f -a /dev/sdb"
+    shell: "wipefs -f -a /dev/sdc"
 
 
