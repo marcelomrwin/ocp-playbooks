@@ -1,0 +1,64 @@
+- hosts: localhost
+  vars_prompt:
+   - name: "vcenter_password"
+     prompt: "Digite a senha do vcenter"
+     private: yes
+   - name: "vm_name"
+     prompt: "Digite o nome da vm"
+     private: no
+   - name: "vm_ip"
+     prompt: "Digite o ip para a VM"
+     private: no
+
+  tasks:
+  
+  - name: Cria Maquina 
+    vmware_guest:
+# Mudar o nome do datacenter
+      datacenter: NOMEDODATACENTER
+      hostname: "192.168.x.y"
+      username: "usernamedovcenter"
+      password: "{{ vcenter_password }}"
+      validate_certs: False
+# Criar o folder no Vmware
+      folder: /ocp-enterprise
+      name: "{{ vm_name }}"
+      state: poweredon
+# Colocar o nome do cluster
+      cluster: PROD
+# Colocar o nome do template
+      template: rhel-template
+      disk:
+      - size_gb: 50
+        type: thin
+# Colocar o datastore
+        datastore: IBM01_SAS_NLSAS
+      - size_gb: 80
+        type: thin
+# Colocar o datastore
+        datastore: IBM01_SAS_NLSAS
+      hardware:
+        memory_mb: 16384
+        num_cpus: 4
+        num_cpu_cores_per_socket: 2
+        scsi: paravirtual
+        hotadd_cpu: True
+        hotremove_cpu: True
+        hotadd_memory: True
+        version: 13 # Hardware version of virtual machine
+      customization:
+        hostname: "{{ vm_name }}"
+      networks:
+# Colocar o nome do portgroup
+      - name: LAN_PROD_08
+        ip: "{{ vm_ip }}"
+        netmask: 255.255.255.0
+        gateway: 10.1.1.254
+        domain: cliente.com.br
+        device_type: vmxnet3
+        dns_servers:
+        - 10.1.1.1
+        - 10.1.1.2
+      wait_for_ip_address: yes
+    delegate_to: localhost
+    register: deploy
