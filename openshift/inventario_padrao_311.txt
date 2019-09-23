@@ -106,6 +106,15 @@ openshift_logging_storage_volume_size=10Gi
 #openshift_storage_glusterfs_block_storageclass_default=false
 #openshift_storage_glusterfs_wipe=true
 
+openshift_storage_glusterfs_image=registry.redhat.io/rhgs3/rhgs-server-rhel7:3.11.3-15
+openshift_storage_glusterfs_block_image=registry.redhat.io/rhgs3/rhgs-gluster-block-prov-rhel7:3.11.3-15
+openshift_storage_glusterfs_s3_image=registry.redhat.io/rhgs3/rhgs-s3-server-rhel7:3.11.3-15
+openshift_storage_glusterfs_heketi_image=registry.redhat.io/rhgs3/rhgs-volmanager-rhel7:3.11.3-15
+openshift_storage_glusterfs_registry_image=registry.redhat.io/rhgs3/rhgs-server-rhel7:3.11.3-15
+openshift_storage_glusterfs_block_registry_image=registry.redhat.io/rhgs3/rhgs-gluster-block-prov-rhel7:3.11.3-15
+openshift_storage_glusterfs_s3_registry_image=registry.redhat.io/rhgs3/rhgs-s3-server-rhel7:3.11.3-15
+openshift_storage_glusterfs_heketi_registry_image=registry.redhat.io/rhgs3/rhgs-volmanager-rhel7:3.11.3-15
+
 # ===========================================
 # Service Catalog
 # ===========================================
