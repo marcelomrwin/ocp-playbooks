@@ -22,6 +22,12 @@
      name: NetworkManager
      state: latest
 
+  - name: Certifica que NetworkManager esta iniciado e habilitado
+    service:
+     name: NetworkManager
+     state: started
+     enabled: yes
+
   - name: Verifica hostnames (hostnames precisam ter fqdn exatamente iguais)
     shell: "hostname"
     register: teste1
