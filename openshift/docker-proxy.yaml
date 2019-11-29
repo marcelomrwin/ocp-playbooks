@@ -1,0 +1,19 @@
+- hosts: nodes
+  tasks:
+  - name: Cria diretorio servico
+    file:
+     path: /etc/systemd/system/docker.service.d
+     state: directory
+
+  - name: Copia arquivo de conf de proxy
+    copy:
+     src: http-proxy.conf
+     dest: /etc/systemd/system/docker.service.d/http-proxy.conf
+  
+  - name: Daemon reload
+    shell: "systemctl daemon-reload"
+
+  - name: Restart docker
+    service:
+     name: docker
+     state: restarted
