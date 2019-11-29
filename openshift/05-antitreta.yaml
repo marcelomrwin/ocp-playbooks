@@ -1,9 +1,4 @@
 - hosts: nodes
-  vars_prompt:
-   - name: "servidor_nfs"
-     prompt: "Digite o servidor nfs"
-     private: no
-
   tasks:
   - name: Desabilita Puppet
     service:
@@ -22,6 +17,11 @@
      name: puppet
      state: removed
 
+  - name: Cerfifica que NetworkManager esta instalado
+    yum:
+     name: NetworkManager
+     state: latest
+
   - name: Verifica hostnames (hostnames precisam ter fqdn exatamente iguais)
     shell: "hostname"
     register: teste1
@@ -30,6 +30,7 @@
   - name: Verifica Entrada Asterisco
     shell: "host aslkasjfsos.{{ openshift_master_default_subdomain }}"
     register: asterisco
+    ignore_errors: yes
   - debug: var=asterisco.stdout_lines
 
 
@@ -48,6 +49,7 @@
   - name: Verifica se nodes resolvem entrada da api
     shell: "host {{ openshift_master_cluster_public_hostname }}"
     register: teste4
+    ignore_errors: yes
   - debug: var=teste4.stdout_lines
 
   - name: Verifica velocidade da internet (30Mbs... tempo esperado ate 45s)
@@ -81,33 +83,6 @@
 
 
 ########################
-# Testes de NFS
-########################
-  - name: Instala NFS Utils
-    yum:
-     name: nfs-utils
-     state: latest
-
-  - name: Instala rpcbind
-    yum:
-     name: rpcbind
-     state: latest
-  - name: Cria diretorio temporario
-    file: 
-     state: directory
-     path: "/tmp/nfs"
-     mode: 0755
-
-  - name: Monta diretorio
-    shell: "mount {{ servidor_nfs }}:/exports /tmp/nfs"
-
-  - name: Salva Arquivo
-    shell: "touch /tmp/nfs/{{ inventory_hostname }}"
-
-  - name: Desmonta FS
-    shell: "umount /tmp/nfs"  
-
-########################
 # Testes de Pacotes
 ########################
 
@@ -117,9 +92,3 @@
   - debug: var=teste10.stdout_lines
 
   
-- hosts: nfs 
-  tasks:
-  - name: Listando arquivos no nfs
-    shell: "ls -la /exports"
-    register: testenfs
-  - debug: var=testenfs.stdout_lines
